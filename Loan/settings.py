@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'Loan.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'loan',,
+        'NAME': 'loan',
         'USER': 'postgres',
         'PASSWORD': 'Santo712###07',
         'HOST': 'localhost',

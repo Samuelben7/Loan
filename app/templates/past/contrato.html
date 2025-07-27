@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Contrato de Empréstimo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            color: #000;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #eee;
+        }
+        .assinatura {
+            margin-top: 80px;
+            text-align: center;
+        }
+        .assinatura span {
+            display: inline-block;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+            margin-top: 20px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Contrato de Empréstimo</h1>
+
+    <h2>Dados do Contratante</h2>
+    <p><strong>Nome:</strong> {{ contratante.name }}</p>
+    <p><strong>CPF:</strong> {{ contratante.cpf }}</p>
+    <p><strong>Telefone:</strong> {{ contratante.phone }}</p>
+    <p><strong>Endereço:</strong> {{ contratante.road }}, {{ contratante.number }} - {{ contratante.neighborhood }} - {{ contratante.city }}</p>
+
+    <h2>Dados do Contrato</h2>
+    <p><strong>Data do contrato:</strong> {{ contrato.data_contrato|date:"d/m/Y" }}</p>
+    <p><strong>Valor Total (sem juros):</strong> R$ {{ contrato.valor_total }}</p>
+    <p><strong>Juros:</strong> {{ contrato.juros_percentual }}%</p>
+    <p><strong>Valor Total com Juros:</strong> R$ {{ valor_total_com_juros }}</p>
+    <p><strong>Número de parcelas:</strong> {{ contrato.numero_parcelas }}</p>
+    {% if contrato.observacoes %}<p><strong>Observações:</strong> {{ contrato.observacoes }}</p>{% endif %}
+
+    <h2>Parcelas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Data de Vencimento</th>
+                <th>Valor</th>
+                <th>Pago?</th>
+                <th>Data de Pagamento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for parcela in parcelas %}
+            <tr>
+                <td>{{ parcela.numero }}</td>
+                <td>{{ parcela.data_vencimento|date:"d/m/Y" }}</td>
+                <td>R$ {{ parcela.valor }}</td>
+                <td>{% if parcela.paga %}Sim{% else %}Não{% endif %}</td>
+                <td>{% if parcela.data_pagamento %}{{ parcela.data_pagamento|date:"d/m/Y" }}{% else %}-{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="assinatura">
+        <p>Feira de Santana, {{ contrato.data_contrato|date:"d \d\e F \d\e Y" }}</p>
+        <br><br>
+        <span>{{ contratante.name }}</span>
+        <p>Assinatura do contratante</p>
+    </div>
+</body>
+</html>

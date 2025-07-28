@@ -3,6 +3,9 @@ from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils import timezone
+from datetime import timedelta
+from .models import ContratoEmprestimo, Parcela
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.permissions import IsAuthenticated
@@ -12,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.conf import settings
 from rest_framework import status
-
+from django.db.models import Sum
 from django.core.mail import EmailMessage
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth import get_user_model
@@ -35,7 +38,83 @@ import tempfile
 from .models import ContratoEmprestimo
 from django.http import FileResponse
 import os
+from django.utils import timezone
+from django.db.models import Sum
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from datetime import timedelta
+from .models import ContratoEmprestimo, Parcela
+from decimal import Decimal, ROUND_HALF_UP
+
+
 User = get_user_model()
+
+
+class EstatisticasEmprestimosView(APIView):
+    def get(self, request):
+        try:
+            hoje = timezone.now().date()
+
+            def get_interval_data(model, field, filtro_adicional=None, valor_field=None):
+                base = model.objects
+                if filtro_adicional:
+                    base = base.filter(**filtro_adicional)
+                valor_field = valor_field or ("valor_total" if model.__name__ == "ContratoEmprestimo" else "valor")
+                return {
+                    "mensal": base.filter(**{f"{field}__gte": hoje - timedelta(days=30)}).aggregate(soma=Sum(valor_field))["soma"] or 0,
+                    "trimestral": base.filter(**{f"{field}__gte": hoje - timedelta(days=90)}).aggregate(soma=Sum(valor_field))["soma"] or 0,
+                    "anual": base.filter(**{f"{field}__gte": hoje - timedelta(days=365)}).aggregate(soma=Sum(valor_field))["soma"] or 0,
+                }
+
+            # 1. Empréstimos concedidos
+            emprestimos_totais = get_interval_data(ContratoEmprestimo, 'data_contrato')
+
+            # 2. Valores pagos
+            valores_pagos = get_interval_data(Parcela, 'data_pagamento', filtro_adicional={'paga': True})
+
+            # 3. Total na rua sem juros
+            total_emprestado_sem_juros = ContratoEmprestimo.objects.aggregate(
+                total=Sum('valor_total')
+            )['total'] or Decimal('0.00')
+
+            total_pago_sem_juros = Decimal('0.00')
+            for contrato in ContratoEmprestimo.objects.all():
+                parcelas_pagas = contrato.parcelas.filter(paga=True).count()
+                if contrato.numero_parcelas > 0:
+                    porcentagem_paga = Decimal(parcelas_pagas) / Decimal(contrato.numero_parcelas)
+                    valor_pago = porcentagem_paga * contrato.valor_total
+                    total_pago_sem_juros += valor_pago
+
+            total_na_rua_sem_juros = total_emprestado_sem_juros - total_pago_sem_juros
+
+            # 4. Total na rua com juros
+            total_com_juros = sum(
+                [c.valor_total_com_juros() for c in ContratoEmprestimo.objects.all()],
+                Decimal('0.00')
+            )
+            total_parcelas_pagas = Parcela.objects.filter(paga=True).aggregate(
+                total=Sum('valor')
+            )['total'] or Decimal('0.00')
+
+            total_na_rua_com_juros = total_com_juros - total_parcelas_pagas
+
+            # 5. Total de contratos existentes
+            total_contratos = ContratoEmprestimo.objects.count()
+
+            # 6. Previsão de lucro (com base no juros dos contratos)
+            previsao_lucro = total_com_juros - total_emprestado_sem_juros
+
+            return Response({
+                "emprestimos_totais": emprestimos_totais,
+                "valores_pagos": valores_pagos,
+                "total_na_rua_sem_juros": round(total_na_rua_sem_juros, 2),
+                "total_na_rua_com_juros": round(total_na_rua_com_juros, 2),
+                "total_contratos": total_contratos,
+                "previsao_lucro_total": round(previsao_lucro, 2)
+            })
+        except Exception as a:
+            print(a)
+            return Response({"erro": str(a)}, status=500)
 
 
 @csrf_exempt

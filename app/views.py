@@ -131,13 +131,8 @@ class EstatisticaMensalView(APIView):
             mes = int(request.GET.get("mes"))
             ano = int(request.GET.get("ano"))
 
-            # Data base para filtro
             data_inicio = date(ano, mes, 1)
-            if mes == 12:
-                data_fim = date(ano + 1, 1, 1)
-            else:
-                data_fim = date(ano, mes + 1, 1)
-
+            data_fim = date(ano + 1, 1, 1) if mes == 12 else date(ano, mes + 1, 1)
             hoje = timezone.now().date()
 
             # Parcelas pagas no mês (ganho líquido)
@@ -147,15 +142,14 @@ class EstatisticaMensalView(APIView):
                 data_pagamento__lt=data_fim
             )
 
-            # Parcelas a vencer no mês (ainda dentro do prazo)
+            # Parcelas a vencer no mês
             a_vencer = Parcela.objects.filter(
                 paga=False,
-                data_vencimento__gte=hoje,
-                data_vencimento__gte=data_inicio,
+                data_vencimento__gte=max(hoje, data_inicio),
                 data_vencimento__lt=data_fim
             )
 
-            # Parcelas atrasadas no mês (vencidas e não pagas)
+            # Parcelas atrasadas no mês
             atrasadas = Parcela.objects.filter(
                 paga=False,
                 data_vencimento__lt=hoje,
@@ -175,6 +169,7 @@ class EstatisticaMensalView(APIView):
 
         except Exception as e:
             return Response({"erro": str(e)}, status=400)
+
 
 
 @csrf_exempt

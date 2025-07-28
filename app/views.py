@@ -152,9 +152,8 @@ class EstatisticaMensalView(APIView):
             # Parcelas atrasadas no mês
             atrasadas = Parcela.objects.filter(
                 paga=False,
-                data_vencimento__lt=hoje,
                 data_vencimento__gte=data_inicio,
-                data_vencimento__lt=data_fim
+                data_vencimento__lt=min(hoje, data_fim)  # ← corrigido
             )
 
             total_pagas = pagas.aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
@@ -169,9 +168,8 @@ class EstatisticaMensalView(APIView):
 
         except Exception as e:
             return Response({"erro": str(e)}, status=400)
-
-
-
+            
+            
 @csrf_exempt
 def gerar_pdf_enviar_email(request, contrato_id):
     try:

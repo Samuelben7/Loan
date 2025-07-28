@@ -124,6 +124,58 @@ class EstatisticasEmprestimosView(APIView):
             print(a)
             return Response({"erro": str(a)}, status=500)
 
+class EstatisticaMensalView(APIView):
+    def get(self, request):
+        try:
+            dia = int(request.GET.get("dia"))
+            mes = int(request.GET.get("mes"))
+            ano = int(request.GET.get("ano"))
+
+            # Data base para filtro
+            data_inicio = date(ano, mes, 1)
+            if mes == 12:
+                data_fim = date(ano + 1, 1, 1)
+            else:
+                data_fim = date(ano, mes + 1, 1)
+
+            hoje = timezone.now().date()
+
+            # Parcelas pagas no mês (ganho líquido)
+            pagas = Parcela.objects.filter(
+                paga=True,
+                data_pagamento__gte=data_inicio,
+                data_pagamento__lt=data_fim
+            )
+
+            # Parcelas a vencer no mês (ainda dentro do prazo)
+            a_vencer = Parcela.objects.filter(
+                paga=False,
+                data_vencimento__gte=hoje,
+                data_vencimento__gte=data_inicio,
+                data_vencimento__lt=data_fim
+            )
+
+            # Parcelas atrasadas no mês (vencidas e não pagas)
+            atrasadas = Parcela.objects.filter(
+                paga=False,
+                data_vencimento__lt=hoje,
+                data_vencimento__gte=data_inicio,
+                data_vencimento__lt=data_fim
+            )
+
+            total_pagas = pagas.aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
+            total_a_vencer = a_vencer.aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
+            total_atrasadas = atrasadas.aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
+
+            return Response({
+                "pagas": float(total_pagas),
+                "a_vencer": float(total_a_vencer),
+                "atrasadas": float(total_atrasadas)
+            })
+
+        except Exception as e:
+            return Response({"erro": str(e)}, status=400)
+
 
 @csrf_exempt
 def gerar_pdf_enviar_email(request, contrato_id):

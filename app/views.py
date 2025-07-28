@@ -104,14 +104,22 @@ class EstatisticasEmprestimosView(APIView):
             # 6. Previsão de lucro (com base no juros dos contratos)
             previsao_lucro = total_com_juros - total_emprestado_sem_juros
 
+            # 7. Parcelas em atraso
+            total_atrasos = Parcela.objects.filter(
+                paga=False,
+                data_vencimento__lt=hoje
+            ).count()
+
             return Response({
                 "emprestimos_totais": emprestimos_totais,
                 "valores_pagos": valores_pagos,
                 "total_na_rua_sem_juros": round(total_na_rua_sem_juros, 2),
                 "total_na_rua_com_juros": round(total_na_rua_com_juros, 2),
                 "total_contratos": total_contratos,
-                "previsao_lucro_total": round(previsao_lucro, 2)
+                "previsao_lucro_total": round(previsao_lucro, 2),
+                "total_atrasos": total_atrasos
             })
+
         except Exception as a:
             print(a)
             return Response({"erro": str(a)}, status=500)

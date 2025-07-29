@@ -128,43 +128,23 @@ class EstatisticasEmprestimosView(APIView):
 class EstatisticaMensalView(APIView):
     def get(self, request):
         try:
-            dia = int(request.GET.get("dia"))
             mes = int(request.GET.get("mes"))
-            ano = int(request.GET.get("ano"))
+            ano = timezone.now().year
+            hoje = timezone.now().date()
 
             data_inicio = date(ano, mes, 1)
             data_fim = date(ano + 1, 1, 1) if mes == 12 else date(ano, mes + 1, 1)
-            hoje = timezone.now().date()
 
-            # Parcelas pagas no mês (ganho líquido)
-            pagas = Parcela.objects.filter(
-                paga=True,
-                data_pagamento__gte=data_inicio,
-                data_pagamento__lt=data_fim
-            )
+            parcelas = Parcela.objects.filter(data_vencimento__gte=data_inicio, data_vencimento__lt=data_fim)
 
-            # Parcelas a vencer no mês
-            a_vencer = Parcela.objects.filter(
-                paga=False,
-                data_vencimento__gte=max(hoje, data_inicio),
-                data_vencimento__lt=data_fim
-            )
-
-            # Parcelas atrasadas no mês
-            atrasadas = Parcela.objects.filter(
-                paga=False,
-                data_vencimento__gte=data_inicio,
-                data_vencimento__lt=min(hoje, data_fim)  # ← corrigido
-            )
-
-            total_pagas = pagas.aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
-            total_a_vencer = a_vencer.aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
-            total_atrasadas = atrasadas.aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
+            total_pagas = parcelas.filter(paga=True).aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
+            total_atrasadas = parcelas.filter(paga=False, data_vencimento__lt=hoje).aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
+            total_a_vencer = parcelas.filter(paga=False, data_vencimento__gte=hoje).aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
 
             return Response({
                 "pagas": float(total_pagas),
-                "a_vencer": float(total_a_vencer),
-                "atrasadas": float(total_atrasadas)
+                "atrasadas": float(total_atrasadas),
+                "a_vencer": float(total_a_vencer)
             })
 
         except Exception as e:

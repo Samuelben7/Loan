@@ -132,19 +132,21 @@ class EstatisticaMensalView(APIView):
             ano = timezone.now().year
             hoje = timezone.now().date()
 
+            # Define o início e fim do mês
             data_inicio = date(ano, mes, 1)
             data_fim = date(ano + 1, 1, 1) if mes == 12 else date(ano, mes + 1, 1)
 
+            # Filtra as parcelas do mês
             parcelas = Parcela.objects.filter(data_vencimento__gte=data_inicio, data_vencimento__lt=data_fim)
 
-            total_pagas = parcelas.filter(paga=True).aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
-            total_atrasadas = parcelas.filter(paga=False, data_vencimento__lt=hoje).aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
-            total_a_vencer = parcelas.filter(paga=False, data_vencimento__gte=hoje).aggregate(total=Sum('valor'))['total'] or Decimal('0.00')
+            total_pagas = parcelas.filter(paga=True).count()
+            total_atrasadas = parcelas.filter(paga=False, data_vencimento__lt=hoje).count()
+            total_a_vencer = parcelas.filter(paga=False, data_vencimento__gte=hoje).count()
 
             return Response({
-                "pagas": float(total_pagas),
-                "atrasadas": float(total_atrasadas),
-                "a_vencer": float(total_a_vencer)
+                "pagas": total_pagas,
+                "atrasadas": total_atrasadas,
+                "a_vencer": total_a_vencer
             })
 
         except Exception as e:

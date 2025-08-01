@@ -54,7 +54,7 @@ class EstatisticasEmprestimosView(APIView):
             user = request.user
             hoje = timezone.now().date()
 
-            # Contratos do usuário logado
+           
             contratos_usuario = ContratoEmprestimo.objects.filter(contratante__user=user)
 
             def get_interval_data(model, field, filtro_adicional=None, valor_field=None):
@@ -178,7 +178,6 @@ class EstatisticaMensalView(APIView):
             
             
 @csrf_exempt
-@login_required  # just users on 
 def gerar_pdf_enviar_email(request, contrato_id):
     try:
         

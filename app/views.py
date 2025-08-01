@@ -1,8 +1,10 @@
+
 from datetime import date, timedelta
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 import json
 import os
 import tempfile
+
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -19,15 +21,23 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.sites.shortcuts import get_current_site
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from django.core.exceptions import ValidationError
+
+
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+
+
 from weasyprint import HTML
 
+
 from .models import ContratoEmprestimo, Parcela
+
 
 User = get_user_model()
 

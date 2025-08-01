@@ -175,13 +175,7 @@ class EstatisticaMensalView(APIView):
         except Exception as e:
             return Response({"erro": f"Erro interno: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from django.utils import timezone
-from datetime import date
-import traceback
+
 class EstatisticaParcelasPagasView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -228,8 +222,8 @@ class EstatisticaParcelasPagasView(APIView):
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
-            print(traceback.format_exc())  # Vai mostrar o erro completo no terminal
             return Response({"erro": f"Erro interno: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
             
             
 class GerarPDFEnviarEmailView(APIView):

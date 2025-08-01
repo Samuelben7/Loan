@@ -6,6 +6,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils import timezone
+
 
 class ContratanteViewSet(ModelViewSet):
     serializer_class = ContratanteSerializer

@@ -287,43 +287,42 @@ class LoginView(APIView):
         if not username or not password:
             return Response({'error': 'E-mail, CPF e senha são obrigatórios.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Usando o modelo de usuário customizado
-        user_model = get_user_model()  # Aqui pegamos o modelo de usuário customizado
+        user_model = get_user_model()
         user = None
         
-        # Tenta localizar o usuário pelo e-mail ou CPF
-        if '@' in username:  # Verifica se o "username" é um e-mail
+        if '@' in username:
             try:
                 user = user_model.objects.get(email=username)
             except user_model.DoesNotExist:
                 pass
-        else:  # Caso contrário, tenta encontrar pelo CPF
+        else:
             try:
                 user = user_model.objects.get(cpf=username)
             except user_model.DoesNotExist:
                 pass
 
-        # Se não encontrar o usuário
         if not user:
             return Response({'error': 'Usuário não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Verifica se o usuário está ativo (se ele clicou no link de ativação)
         if not user.is_active:
             return Response({'error': 'Sua conta não foi ativada. Verifique seu e-mail para ativar.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Verifica se a senha está correta
         if not user.check_password(password):
             return Response({'error': 'Credenciais inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Gera os tokens JWT (access e refresh)
         refresh = RefreshToken.for_user(user)
-
-        
 
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+            'user': {
+                'id': user.id,
+                'name': user.name,
+                'email': user.email,
+                
+            }
         })
+
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]

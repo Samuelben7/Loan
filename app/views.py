@@ -177,61 +177,56 @@ class EstatisticaMensalView(APIView):
 
             
             
-@csrf_exempt
-def gerar_pdf_enviar_email(request, contrato_id):
-    try:
-        
-        contrato = ContratoEmprestimo.objects.select_related('contratante').prefetch_related('parcelas').get(
-            id=contrato_id,
-            contratante__user=request.user
-        )
-        parcelas = contrato.parcelas.all().order_by('numero')
+class GerarPDFEnviarEmailView(APIView):
+    permission_classes = [IsAuthenticated]
 
-        dados = {
-            'contrato': contrato,
-            'contratante': contrato.contratante,
-            'parcelas': parcelas,
-            'valor_total_com_juros': contrato.valor_total_com_juros(),
-            'valor_parcela': contrato.valor_parcela(),
-        }
+    def get(self, request, contrato_id):
+        try:
+            contrato = ContratoEmprestimo.objects.select_related('contratante').prefetch_related('parcelas').get(
+                id=contrato_id,
+                contratante__user=request.user
+            )
+            parcelas = contrato.parcelas.all().order_by('numero')
 
-        html_string = render_to_string('past/contrato.html', dados)
+            dados = {
+                'contrato': contrato,
+                'contratante': contrato.contratante,
+                'parcelas': parcelas,
+                'valor_total_com_juros': contrato.valor_total_com_juros(),
+                'valor_parcela': contrato.valor_parcela(),
+            }
 
-        
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-        temp_file.close()  
-        HTML(string=html_string).write_pdf(target=temp_file.name)
+            html_string = render_to_string('past/contrato.html', dados)
 
-       
-        with open(temp_file.name, 'rb') as f:
-            pdf_content = f.read()
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+            temp_file.close()
+            HTML(string=html_string).write_pdf(target=temp_file.name)
 
-        # here we are sending the email 
-        email = EmailMessage(
-            subject=f"Contrato de Empréstimo - {contrato.contratante.name}",
-            body="Segue em anexo o contrato de empréstimo.",
-            to=[contrato.contratante.email],
-        )
-        email.attach(f"Contrato_{contrato.contratante.name}.pdf", pdf_content, 'application/pdf')
-        email.send()
+            with open(temp_file.name, 'rb') as f:
+                pdf_content = f.read()
 
-        # Return the response here 
-        response = FileResponse(open(temp_file.name, 'rb'), content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="Contrato_{contrato.contratante.name}.pdf"'
+            email = EmailMessage(
+                subject=f"Contrato de Empréstimo - {contrato.contratante.name}",
+                body="Segue em anexo o contrato de empréstimo.",
+                to=[contrato.contratante.email],
+            )
+            email.attach(f"Contrato_{contrato.contratante.name}.pdf", pdf_content, 'application/pdf')
+            email.send()
 
-        return response
+            response = FileResponse(open(temp_file.name, 'rb'), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="Contrato_{contrato.contratante.name}.pdf"'
 
-    except ContratoEmprestimo.DoesNotExist:
-        return HttpResponse("Contrato não encontrado ou você não tem permissão para acessá-lo.", status=404)
+            return response
 
-    except Exception as e:
-        return HttpResponse(f"Erro ao gerar PDF: {str(e)}", status=500)
+        except ContratoEmprestimo.DoesNotExist:
+            return Response({"erro": "Contrato não encontrado ou acesso não permitido."}, status=status.HTTP_404_NOT_FOUND)
 
-    finally:
-        # remove temp file
-        if 'temp_file' in locals() and os.path.exists(temp_file.name):
-            os.remove(temp_file.name)
+        except Exception as e:
+            return Response({"erro": f"Erro ao gerar PDF: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        finally:
+            if 'temp_file' in locals() and os.path.exists(temp_file.name):
+                os.remove(temp_file.name)
 
 class RegisterView(APIView):
     def post(self, request):

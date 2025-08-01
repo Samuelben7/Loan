@@ -13,6 +13,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.core.mail import EmailMessage, send_mail
 from django.db.models import Sum
+
 from django.http import JsonResponse, HttpResponse, FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -202,19 +203,18 @@ class EstatisticaParcelasPagasView(APIView):
             )
 
             # Ganhos do dia
-            ganho_dia = parcelas.filter(data_pagamento=hoje).aggregate(total_valor=models.Sum('valor'))['total_valor'] or 0
+            ganho_dia = parcelas.filter(data_pagamento=hoje).aggregate(total_valor=Sum('valor'))['total_valor'] or 0
 
-            # Ganhos do mês
             ganho_mes = parcelas.filter(
                 data_pagamento__gte=data_inicio_mes,
                 data_pagamento__lt=data_inicio_proximo_mes
-            ).aggregate(total_valor=models.Sum('valor'))['total_valor'] or 0
+            ).aggregate(total_valor=Sum('valor'))['total_valor'] or 0
 
-            # Ganhos do ano
             ganho_ano = parcelas.filter(
                 data_pagamento__gte=data_inicio_ano,
                 data_pagamento__lt=data_inicio_proximo_ano
-            ).aggregate(total_valor=models.Sum('valor'))['total_valor'] or 0
+            ).aggregate(total_valor=Sum('valor'))['total_valor'] or 0
+
 
             return Response({
                 "ganho_dia": float(ganho_dia),

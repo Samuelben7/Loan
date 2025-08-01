@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .view_api import ContratanteViewSet, ContratoEmprestimoViewSet, ParcelaViewSet
 
 from .views import (
-    RegisterView, LoginView, ResetPasswordPageView, ActivateAccountView, EstatisticaMensalView, PasswordResetRequestView, LogoutView, GerarPDFEnviarEmailView, EstatisticasEmprestimosView
+    RegisterView, EstatisticaParcelasPagasView, LoginView, ResetPasswordPageView, ActivateAccountView, EstatisticaMensalView, PasswordResetRequestView, LogoutView, GerarPDFEnviarEmailView, EstatisticasEmprestimosView
 )
 
 router = DefaultRouter()
@@ -24,5 +24,6 @@ urlpatterns = [
     path('estatisticas-mensais/', EstatisticaMensalView.as_view(), name='estatisticas-mensais'),
     path('reset-password/', PasswordResetRequestView.as_view(), name='password_reset_request'),
     path('reset-password/<uidb64>/<token>/', ResetPasswordPageView.as_view(), name='password_reset'),
+    path('pagas/', EstatisticaParcelasPagasView.as_view(), name='pagas')
 
 ]

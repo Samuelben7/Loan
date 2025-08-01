@@ -175,6 +175,60 @@ class EstatisticaMensalView(APIView):
         except Exception as e:
             return Response({"erro": f"Erro interno: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from django.utils import timezone
+from datetime import date
+
+class EstatisticaParcelasPagasView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            usuario = request.user
+            hoje = timezone.now().date()
+
+            # Data início e fim do mês atual
+            data_inicio_mes = date(hoje.year, hoje.month, 1)
+            if hoje.month == 12:
+                data_inicio_proximo_mes = date(hoje.year + 1, 1, 1)
+            else:
+                data_inicio_proximo_mes = date(hoje.year, hoje.month + 1, 1)
+
+            # Data início e fim do ano atual
+            data_inicio_ano = date(hoje.year, 1, 1)
+            data_inicio_proximo_ano = date(hoje.year + 1, 1, 1)
+
+            parcelas = Parcela.objects.filter(
+                contrato__contratante__user=usuario,
+                paga=True,
+            )
+
+            # Ganhos do dia
+            ganho_dia = parcelas.filter(data_pagamento=hoje).aggregate(total_valor=models.Sum('valor'))['total_valor'] or 0
+
+            # Ganhos do mês
+            ganho_mes = parcelas.filter(
+                data_pagamento__gte=data_inicio_mes,
+                data_pagamento__lt=data_inicio_proximo_mes
+            ).aggregate(total_valor=models.Sum('valor'))['total_valor'] or 0
+
+            # Ganhos do ano
+            ganho_ano = parcelas.filter(
+                data_pagamento__gte=data_inicio_ano,
+                data_pagamento__lt=data_inicio_proximo_ano
+            ).aggregate(total_valor=models.Sum('valor'))['total_valor'] or 0
+
+            return Response({
+                "ganho_dia": float(ganho_dia),
+                "ganho_mes": float(ganho_mes),
+                "ganho_ano": float(ganho_ano),
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"erro": f"Erro interno: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
             
 class GerarPDFEnviarEmailView(APIView):

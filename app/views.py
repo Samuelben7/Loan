@@ -227,6 +227,7 @@ class RegisterView(APIView):
         email = request.data.get('email')
         password = request.data.get('password')
         cpf = request.data.get('cpf')
+        name = request.data.get('name') 
 
         # Verificar se e-mail e senha estão presentes
         if not email or not password:
@@ -236,15 +237,16 @@ class RegisterView(APIView):
         if User.objects.filter(email=email).exists():
             return Response({'error': 'E-mail já cadastrado. Faça login.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Criar o usuário usando o manager do seu modelo personalizado
+       
         user = User.objects.create_user(
             email=email, 
             cpf=cpf, 
             password=password, 
+            name=name,
             is_active=False
         )
         # Gerar o UID para enviar por e-mail
-        uid = urlsafe_base64_encode(str(user.pk).encode('utf-8'))  # Garantindo que o ID seja convertido para string antes de codificar
+        uid = urlsafe_base64_encode(str(user.pk).encode('utf-8'))  
         token = token_generator.make_token(user)  # Usando o token padrão do Django
 
         # Enviar o e-mail de ativação

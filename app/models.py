@@ -36,8 +36,9 @@ class CustomUserManager(BaseUserManager):
 
 
 
-# Modelo Customizado de Usuário
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    name = models.CharField(_('nome completo'), max_length=100, blank=True, null=True)  
+
     email = models.EmailField(_('e-mail'), unique=True)
     cpf = models.CharField(
         _('CPF'),
@@ -45,10 +46,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         unique=True,
         null=True,
         blank=True,
-        validators=[RegexValidator(r'^\d{11}$', _('Digite um CPF válido.'))]  # Validação de CPF
+        validators=[RegexValidator(r'^\d{11}$', _('Digite um CPF válido.')))
     )
     is_active = models.BooleanField(_('ativo'), default=True)
     is_staff = models.BooleanField(_('é staff'), default=False)
+
+
 
 
     # Relacionamentos

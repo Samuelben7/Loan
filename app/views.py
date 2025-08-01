@@ -37,6 +37,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from weasyprint import HTML
 
+from datetime import date
 
 from .models import ContratoEmprestimo, Parcela
 

@@ -46,8 +46,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         unique=True,
         null=True,
         blank=True,
-        validators=[RegexValidator(r'^\d{11}$', _('Digite um CPF válido.')))
-    )
+        validators=[RegexValidator(r'^\d{11}$', _('Digite um CPF válido.'))]
+    
     is_active = models.BooleanField(_('ativo'), default=True)
     is_staff = models.BooleanField(_('é staff'), default=False)
 

@@ -6,48 +6,51 @@
     <title>Ativação de Conta - Your Loan</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
             margin: 0;
-            padding: 0;
+            padding: 40px 0;
         }
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 580px;
             margin: 0 auto;
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
         h2 {
             text-align: center;
-            color: #333333;
+            color: #2c2c2c;
+            font-size: 24px;
         }
         p {
             font-size: 16px;
-            color: #555555;
-            line-height: 1.5;
+            color: #444444;
+            line-height: 1.6;
         }
-        a {
-            display: inline-block;
-            text-align: center;
-            padding: 12px 20px;
-            font-size: 16px;
+        a.button {
+            display: block;
+            width: fit-content;
+            margin: 30px auto 10px auto;
+            padding: 12px 28px;
+            background-color: #6c63ff;
             color: #ffffff;
-            background-color: #4CAF50;
             text-decoration: none;
-            border-radius: 4px;
-            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
         }
-        a:hover {
-            background-color: #45a049;
+        a.button:hover {
+            background-color: #5a52e8;
         }
         .footer {
             text-align: center;
-            font-size: 12px;
-            color: #777777;
-            margin-top: 30px;
+            font-size: 13px;
+            color: #888888;
+            margin-top: 40px;
         }
     </style>
 </head>
@@ -55,9 +58,9 @@
     <div class="container">
         <h2>Bem-vindo ao Your Loan</h2>
         <p>Olá {{ user.email }},</p>
-        <p>Obrigado por se cadastrar no Your Loan! Para ativar sua conta, clique no link abaixo:</p>
-        <a href="http://{{ domain }}/api/activate/{{ uid }}/{{ token }}">Ativar Conta</a>
-        <p class="footer">Se você não solicitou este cadastro, ignore este e-mail.</p>
+        <p>Obrigado por se cadastrar no <strong>Your Loan</strong>! Para ativar sua conta, clique no botão abaixo:</p>
+        <a href="http://{{ domain }}/api/activate/{{ uid }}/{{ token }}" class="button">Ativar Conta</a>
+        <p class="footer">Se você não solicitou este cadastro, apenas ignore esta mensagem.</p>
     </div>
 </body>
 </html>

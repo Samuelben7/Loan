@@ -16,6 +16,13 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            page-break-inside: auto; /* permite que a tabela quebre entre páginas */
+        }
+        thead {
+            /* NÃO repetir cabeçalho em cada página */
+        }
+        tr, td, th {
+            page-break-inside: avoid; /* evita que uma linha ou célula seja cortada */
         }
         th, td {
             border: 1px solid #999;
@@ -28,6 +35,7 @@
         .assinatura {
             margin-top: 80px;
             text-align: center;
+            page-break-before: always; /* força quebra antes da assinatura */
         }
         .assinatura span {
             display: inline-block;

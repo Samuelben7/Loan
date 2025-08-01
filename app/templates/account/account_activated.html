@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Redefinir Senha - Your Loan</title>
+    <title>Conta Ativada - Your Loan</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,11 +23,11 @@
         }
         h2 {
             color: #2c2c2c;
-            font-size: 24px;
+            font-size: 28px;
             margin-bottom: 20px;
         }
         p {
-            font-size: 16px;
+            font-size: 18px;
             color: #444444;
             line-height: 1.6;
             margin: 10px 0;
@@ -46,20 +46,14 @@
         a.button:hover {
             background-color: #45a049;
         }
-        .footer {
-            font-size: 13px;
-            color: #888888;
-            margin-top: 40px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Redefinir sua senha - Your Loan</h2>
-        <p>Olá {{ user.first_name }},</p>
-        <p>Recebemos uma solicitação para redefinir a senha da sua conta Your Loan. Se você fez essa solicitação, clique no link abaixo para redefinir sua senha:</p>
-        <a href="{{ reset_link }}" class="button">Redefinir Senha</a>
-        <p class="footer">Se você não solicitou esta redefinição de senha, ignore este e-mail.</p>
+        <h2>Conta Ativada com Sucesso!</h2>
+        <p>Olá {{ user.email }},</p>
+        <p>Sua conta no <strong>Your Loan</strong> foi ativada com sucesso.</p>
+        <p>Agora você pode fazer login no app e começar a usar nossos serviços. </p>
     </div>
 </body>
 </html>

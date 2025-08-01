@@ -6,60 +6,64 @@
   <title>Conta Ativada - Your Loan</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #F8F8F8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
       margin: 0;
       padding: 0;
     }
     .container {
-      width: 100%;
       max-width: 600px;
-      margin: 30px auto;
+      margin: 40px auto;
       background-color: #ffffff;
-      padding: 30px 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 40px 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
       text-align: center;
     }
     .logo {
-      width: 180px;
-      height: auto;
-      margin-bottom: 20px;
+      width: 160px;
+      margin-bottom: 25px;
     }
     h2 {
-      color: #001f3f;
+      color: #1a1a1a;
+      font-size: 24px;
+      margin-bottom: 10px;
     }
     p {
+      color: #444;
       font-size: 16px;
-      color: #555555;
       line-height: 1.6;
+      margin: 10px 0;
     }
     a.button {
       display: inline-block;
-      padding: 12px 24px;
-      font-size: 16px;
-      color: #ffffff;
-      background-color: #8B0000;
-      text-decoration: none;
-      border-radius: 6px;
       margin-top: 20px;
+      padding: 14px 28px;
+      font-size: 16px;
+      background-color: #8B0000;
+      color: #fff;
+      border-radius: 6px;
+      text-decoration: none;
       transition: background-color 0.3s ease;
     }
     a.button:hover {
-      background-color: #a00000;
+      background-color: #a10000;
+    }
+    .footer {
+      margin-top: 35px;
+      font-size: 13px;
+      color: #999;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <img src="http://{{ current_domain }}/static/images/12345.png" alt="Logotipo MyDriver" class="logo" />
+    <img src="http://{{ current_domain }}/static/images/12345.png" alt="Logotipo Your Loan" class="logo" />
     <h2>Conta Ativada com Sucesso!</h2>
-    <p>Olá {{ user.email }},</p>
-    <p>Parabéns! Sua conta no <strong>Your Loan</strong> foi ativada com sucesso.</p>
-    <p>Agora você pode acessar sua conta e começar a utilizar os nossos serviços.</p>
-    <p>Clique no botão abaixo para fazer login:</p>
-    <a href="http://{{ current_domain }}/login" class="button">Fazer Login</a>
-    <p style="margin-top: 30px;">Se você não solicitou a ativação da conta, por favor ignore este e-mail.</p>
+    <p>Olá <strong>{{ user.email }}</strong>,</p>
+    <p>Sua conta no <strong>Your Loan</strong> foi ativada com sucesso.</p>
+    <p>Você já pode acessar o aplicativo.</p>
+    <p class="footer">Se você não solicitou a ativação da conta, apenas ignore este e-mail.</p>
   </div>
 </body>
 </html>

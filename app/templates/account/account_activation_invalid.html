@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Redefinir Senha - Your Loan</title>
+    <title>Erro na Ativação - Your Loan</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f8d7da;
             margin: 0;
             padding: 40px 0;
         }
@@ -18,17 +18,17 @@
             background-color: #ffffff;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f5c2c7;
             text-align: center;
         }
         h2 {
-            color: #2c2c2c;
-            font-size: 24px;
+            color: #842029;
+            font-size: 28px;
             margin-bottom: 20px;
         }
         p {
-            font-size: 16px;
-            color: #444444;
+            font-size: 18px;
+            color: #842029;
             line-height: 1.6;
             margin: 10px 0;
         }
@@ -37,29 +37,23 @@
             margin-top: 25px;
             padding: 14px 28px;
             font-size: 16px;
-            color: #ffffff;
-            background-color: #4CAF50;
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c2c7;
             text-decoration: none;
             border-radius: 8px;
             transition: background-color 0.3s ease;
         }
         a.button:hover {
-            background-color: #45a049;
-        }
-        .footer {
-            font-size: 13px;
-            color: #888888;
-            margin-top: 40px;
+            background-color: #f5c2c7;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Redefinir sua senha - Your Loan</h2>
-        <p>Olá {{ user.first_name }},</p>
-        <p>Recebemos uma solicitação para redefinir a senha da sua conta Your Loan. Se você fez essa solicitação, clique no link abaixo para redefinir sua senha:</p>
-        <a href="{{ reset_link }}" class="button">Redefinir Senha</a>
-        <p class="footer">Se você não solicitou esta redefinição de senha, ignore este e-mail.</p>
+        <h2>Link de ativação inválido ou expirado</h2>
+        <p>Desculpe, não foi possível ativar sua conta com o link fornecido.</p>
+        <p>Por favor, solicite um novo e-mail de ativação ou entre em contato com o suporte.</p>
     </div>
 </body>
 </html>

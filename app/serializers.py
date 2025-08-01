@@ -4,7 +4,11 @@ from .models import Contratante, ContratoEmprestimo, Parcela
 class ContratanteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contratante
-        fields = '__all__'
+        exclude = []  
+        extra_kwargs = {
+            'user': {'read_only': True}
+        }
+
 
 
 class ParcelaSerializer(serializers.ModelSerializer):

@@ -23,6 +23,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 
+from django.contrib.auth.tokens import default_token_generator
+
 
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
